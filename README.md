@@ -3,6 +3,10 @@
 Paddle动态图是不是很方便？是不是很好用？嗯？可是官方预训练参数都是静态图参数，自己从零开始又达不到精度，哎，还是先用静态图吧。不要方，`PaddleTools`可以帮到你！  
 `PaddleTools`是非官方出品的`Paddle`工具类，主要是为了添加一些日常使用`Paddle`时的常用工具，方便你我他！`PaddleTools`开源的第一款工具就是可以将`Paddle`的静态图参数转换为当下热门方便的动态图参数，如果大家有兴趣，欢迎一起开发这个工具类，如果没兴趣，往下看看也是可以的！
 
+## 工具列表
+
+1. `PaddlePaddle`静态图参数转动态图参数
+
 
 ## 安装
 
@@ -22,6 +26,8 @@ python3 setup.py install
 ```
 
 ## 使用
+
+**请注意，我们在搭建动态网络时，请将参数命名(ParamAttr)与静态图保持一致，这样才能正确读取参数！！！**
 
 - 命令行使用
 
@@ -48,17 +54,39 @@ Example:
 import paddle.fluid as fluid
 from paddletools.checkpoints import static2dynamic
 
-# 保存到文件
+# 第一种方式，保存到文件，然后使用动态网络从文件加载参数
 static2dynamic(params_dir="yolov3_pretrain/", save_path="yolov3")
 
-# 读取参数到内存
+# 第二种方式，读取参数到内存，直接加载到网络中
 model_state_dict = static2dynamic(params_dir="yolov3_pretrain/")
 
 place = fluid.CPUPlace()
 with fluid.dygraph.guard(place):
     model = YOLOv3()  # 初始化定义的动态图网络，这里假定为YOLOv3
-    model.load_dict(model_state_dict)  # 将读取的参数加载到网络中
+    # 注意，这里的use_structured_name一定要设置为false，structured_name是由系统自动取的，与我们自己的命名不同
+    # 这里可能会出现一个warning，但是没有关系，我们的参数已经是成功读取了的
+    model.load_dict(model_state_dict, use_structured_name=False)  # 将读取的参数加载到网络中
 ```
+
+## 测试
+
+1. 使用`paddlepaddle`在`obj365`上预训练的`YoloV3`参数进行测试
+
+```shell
+wget https://paddlemodels.bj.bcebos.com/object_detection/ResNet50_vd_dcn_db_obj365_pretrained.tar
+tar -xvf ResNet50_vd_dcn_db_obj365_pretrained.tar
+pdtools param to_dynamic -s ResNet50_vd_dcn_db_obj365_pretrained -d yolov3
+```
+转换完成会在当前目录下生成一个`yolov3.pdparams`的动态图参数文件
+
+2. 搭建网络测试转换精度
+
+网络详情见`test/demo.py`，主要是一层卷积、一层批归一化、一层全连接，测试结果是静态图与动态图输出完全一致。
+```shell
+cd test
+python3 demo.py
+```
+
 
 ## 建议与意见
 
