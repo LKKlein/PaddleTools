@@ -1,3 +1,4 @@
+import logging
 import os
 import struct
 
@@ -8,6 +9,8 @@ from .config import short2size, type2short
 from .decoder import _decode_buf
 
 place = fluid.CPUPlace()
+logger = logging.getLogger("pdtools")
+logger.setLevel(logging.INFO)
 
 
 def _read_params(param_file):
@@ -31,6 +34,7 @@ def _read_params(param_file):
 
 def static2dynamic(params_dir, save_path=None):
     params = os.listdir(params_dir)
+    logger.info("found {} parameters. start to read.".format(len(params)))
     state_dict = {}
     dtype = ""
     for param in params:
@@ -38,13 +42,16 @@ def static2dynamic(params_dir, save_path=None):
         if os.path.isdir(param_path):
             continue
         data, data_type, lod_info = _read_params(param_path)
+        logger.debug("param: {}, shape: {}, data type: {}".format(param, data.shape, data_type))
         state_dict[param] = data
         dtype = data_type
 
+    logger.info("parameters read finished! start to transform to dynamic!")
     dynamic_state_dict = _make_dynamic_state_dict(state_dict, dtype)
     if save_path:
         with fluid.dygraph.guard(place):
             fluid.save_dygraph(dynamic_state_dict, save_path)
+        logger.info("dynamic parameters has been saved to {}.pdparams.".format(save_path))
     else:
         return dynamic_state_dict
 
@@ -63,4 +70,5 @@ def _make_dynamic_state_dict(state_dict, data_type="float32"):
 
             param = layer_helper.create_parameter(temp_attr, shape, data_type, is_bias, initializer)
             model_state_dict[name] = param
+    logger.info("dynamic parameters make finished!")
     return model_state_dict
