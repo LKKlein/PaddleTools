@@ -1,7 +1,9 @@
-from .checkpoints import static2dynamic
-from docopt import docopt
-import sys
 import os
+import sys
+
+from docopt import docopt
+
+from .checkpoints import static2dynamic
 
 os.umask(0)
 
@@ -24,4 +26,3 @@ def main():
         if not os.path.exists(cmd_args["--src"]):
             raise Exception("source path: {} not exists!".format(cmd_args["--src"]))
         static2dynamic(params_dir=cmd_args["--src"], save_path=cmd_args["--dst"])
-        

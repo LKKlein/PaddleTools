@@ -1,5 +1,5 @@
-import os
 import six
+
 from .config import id2type
 
 
@@ -19,6 +19,7 @@ def _VarintDecoder(mask, result_type):
             if shift >= 64:
                 raise Exception('Too many bytes when decoding varint.')
     return DecodeVarint
+
 
 _DecodeVarint = _VarintDecoder((1 << 64) - 1, int)
 

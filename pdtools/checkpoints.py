@@ -1,8 +1,11 @@
-import numpy as np
+import os
 import struct
+
+import numpy as np
 import paddle.fluid as fluid
+
+from .config import short2size, type2short
 from .decoder import _decode_buf
-from .config import type2short, short2size
 
 place = fluid.CPUPlace()
 
@@ -19,7 +22,7 @@ def _read_params(param_file):
             buf_str += b
         data_type, dims = _decode_buf(buf_str)
         dim_size = np.product(dims)
-        type_short=  type2short[data_type]
+        type_short = type2short[data_type]
         short_size = short2size[type_short]
         data = struct.unpack(type_short * dim_size, f.read(short_size * dim_size))
         data = np.asarray(data).astype(data_type).reshape(dims)
@@ -41,11 +44,11 @@ def static2dynamic(params_dir, save_path=None):
     dynamic_state_dict = _make_dynamic_state_dict(state_dict, dtype)
     if save_path:
         with fluid.dygraph.guard(place):
-            fluid.save_dygraph(model_state_dict, save_path)
+            fluid.save_dygraph(dynamic_state_dict, save_path)
     else:
         return dynamic_state_dict
-    
-    
+
+
 def _make_dynamic_state_dict(state_dict, data_type="float32"):
     with fluid.dygraph.guard(place):
         layer_helper = fluid.dygraph.layer_object_helper.LayerObjectHelper("transform")

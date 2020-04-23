@@ -47,7 +47,7 @@ if __name__ == "__main__":
         entry_points={"console_scripts": [
             "pdtools = pdtools.control:main"
         ]},
-        url="https://github.com/LKKlein/PaddleTools"
+        url="https://github.com/LKKlein/PaddleTools",
         author="lvkun",
         author_email="lkklein@163.com",
         include_package_data=True,
