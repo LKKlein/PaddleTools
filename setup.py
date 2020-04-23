@@ -3,17 +3,17 @@ from pathlib import Path
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-from pdtools import __version__
+from paddletools import __version__
 
 
 def load_package_data():
     cur_dir = Path(__file__).resolve().parent
-    path = Path(cur_dir.joinpath("pdtools"))
-    package_data = {"pdtools": []}
+    path = Path(cur_dir.joinpath("paddletools"))
+    package_data = {"paddletools": []}
 
     for data_path in path.glob("**/*"):
         if data_path.is_file():
-            package_data["pdtools"].append(str(data_path.relative_to(path)))
+            package_data["paddletools"].append(str(data_path.relative_to(path)))
     return package_data
 
 
@@ -37,7 +37,7 @@ def load_requirements():
 
 if __name__ == "__main__":
     setup(
-        name="pdtools",
+        name="paddletools",
         version=__version__,
         python_requires=">=3.3",
         packages=find_packages(),
@@ -45,10 +45,12 @@ if __name__ == "__main__":
         package_data=load_package_data(),
         install_requires=load_requirements(),
         entry_points={"console_scripts": [
-            "pdtools = pdtools.control:main"
+            "pdtools = paddletools.control:main"
         ]},
+        keywords=["Paddle", "Tools"],
         url="https://github.com/LKKlein/PaddleTools",
         author="lvkun",
         author_email="lkklein@163.com",
         include_package_data=True,
+        license='MIT',
     )
