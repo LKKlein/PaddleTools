@@ -5,7 +5,10 @@ Paddle动态图是不是很方便？是不是很好用？嗯？可是官方预�
 
 ## 工具列表
 
-1. `PaddlePaddle`静态图参数转动态图参数
+- [x] `PaddlePaddle`静态图参数转动态图参数
+- [ ] `PaddlePaddle`动态图参数转静态图参数
+- [ ] `Pytorch`参数转`PaddlePaddle`动态图参数
+
 
 
 ## 安装
