@@ -1,3 +1,4 @@
 docopt==0.6.2
-paddlepaddle_gpu==1.7.0.post107
+paddlepaddle_gpu>=1.6.0.post107
 numpy>=1.14.3
+torch>=0.4.0
