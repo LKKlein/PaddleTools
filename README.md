@@ -55,9 +55,10 @@ Example:
     pdtools param from_torch -s yolov3.pth -d yolov3 -v
 ```
 
-- 代码中使用
+- 代码中使用  
 
-  1. 静态图转动态图
+
+1. 静态图转动态图
 
 ```python
 import paddle.fluid as fluid
@@ -77,7 +78,7 @@ with fluid.dygraph.guard(place):
     model.load_dict(model_state_dict, use_structured_name=False)  # 将读取的参数加载到网络中
 ```
 
-  2. 动态图转静态图
+2. 动态图转静态图
 
 ```python
 import paddle.fluid as fluid
@@ -86,7 +87,7 @@ from paddletools.checkpoints import dynamic2static
 dynamic2static(param_file="yolov3", filename="yolov3_pretrain/")
 ```
 
-  3. torch参数转动态图
+3. torch参数转动态图
 
 ```python
 from paddletools.checkpoints import torch2dynamic
