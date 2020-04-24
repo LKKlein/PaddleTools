@@ -8,6 +8,7 @@ id2type = {
     5: "float32",
     6: "float64"
 }
+type2id = {_type: _id for _id, _type in id2type.items()}
 
 type2short = {
     "bool": "?",
