@@ -3,8 +3,9 @@ import warnings
 
 import numpy as np
 import paddle.fluid as fluid
+import logging
 from paddle.fluid.dygraph import Conv2D, BatchNorm, Linear
-from paddletools.checkpoints import static2dynamic
+from paddletools.checkpoints import static2dynamic, dynamic2static
 
 place = fluid.CPUPlace()
 warnings.filterwarnings(action="ignore")
@@ -14,7 +15,7 @@ def reader():
     return np.ones((1, 3, 16, 16), dtype=np.float32)
 
 
-def build_static_network():
+def build_static_network(save_params=False, load_pretrain=None):
     main_prog = fluid.Program()
     startup_prog = fluid.Program()
     exe = fluid.Executor(place)
@@ -40,12 +41,16 @@ def build_static_network():
     eval_prog = main_prog.clone(True)
     exe.run(startup_prog)
 
+    if load_pretrain:
+        fluid.io.load_persistables(exe, load_pretrain, main_prog)
+
     d = {"img": reader()}
     result = exe.run(eval_prog, feed=d, fetch_list=[logits.name])
-    print(result[0])
-    if not os.path.exists("params"):
-        os.mkdir("params")
-    fluid.io.save_persistables(exe, "params", main_prog)
+    logging.info(result[0])
+    if save_params:
+        if not os.path.exists("params"):
+            os.mkdir("params")
+        fluid.io.save_persistables(exe, "params", main_prog)
 
 
 class TestModel(fluid.dygraph.Layer):
@@ -74,20 +79,31 @@ class TestModel(fluid.dygraph.Layer):
         return x
 
 
-def build_dynamic_network():
-    model_state_dict = static2dynamic("params")
-
+def build_dynamic_network(load_params=None, save_params=False):
     with fluid.dygraph.guard(place):
         model = TestModel("test")
-        model.load_dict(model_state_dict, use_structured_name=False)
+        if load_params:
+            model_state_dict, _ = fluid.load_dygraph(load_params)
+            model.load_dict(model_state_dict, use_structured_name=False)
         model.eval()
         d = fluid.dygraph.to_variable(reader())
         p = model(d)
-        print(p.numpy())
+        logging.info(p.numpy())
+        if save_params:
+            fluid.save_dygraph(model.state_dict(), "dynamic_params")
 
 
 if __name__ == "__main__":
-    print(">>> build satic network & save params...")
-    build_static_network()
-    print(">>> read static params & build dynamic network...")
-    build_dynamic_network()
+    logging.info(">>> build satic network & save params...")
+    build_static_network(save_params=True)
+    logging.info(">>> read static params & build dynamic network...")
+    static2dynamic("params", "dynamic")
+    build_dynamic_network(load_params="dynamic")
+
+    print("\n<========================>\n")
+
+    logging.info(">>> build dynamic network & save params...")
+    build_dynamic_network(save_params=True)
+    logging.info(">>> read dynamic params & build static network...")
+    dynamic2static("dynamic_params", "static_params")
+    build_static_network(load_pretrain="static_params")
