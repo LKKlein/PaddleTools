@@ -81,7 +81,6 @@ with fluid.dygraph.guard(place):
 2. 动态图转静态图
 
 ```python
-import paddle.fluid as fluid
 from paddletools.checkpoints import dynamic2static
 
 dynamic2static(param_file="yolov3", filename="yolov3_pretrain/")
