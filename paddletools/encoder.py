@@ -34,7 +34,7 @@ def _encode_tensor_desc(data_type, dims):
     type_id = type2id.get(str(data_type), 5)
     encode_num = [8, type_id]
     for dim in dims:
-        encode_num.append(10)
+        encode_num.append(16)
         encode_num += _VarintBytes(dim)
 
     encode_str = [six.int2byte(num) for num in encode_num]
