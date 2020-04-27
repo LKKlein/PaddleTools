@@ -48,7 +48,7 @@ def _read_dynamic_params(param_file):
     state_dict = {}
     with fluid.dygraph.guard(place):
         model_state_dict, _ = fluid.load_dygraph(param_file, keep_name_table=True)
-        name_table = model_state_dict["StructuredToParameterName@@"]
+        name_table = model_state_dict.pop("StructuredToParameterName@@")
         for name, data in model_state_dict.items():
             state_dict[name_table[name]] = data
     return state_dict
