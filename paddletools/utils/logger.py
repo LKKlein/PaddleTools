@@ -68,7 +68,7 @@ class Logger(object):
         return self.getLevel() == Logger.NOLOG
 
     def setLevel(self, logLevel):
-        assert logLevel in [""]
+        assert logLevel in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         self.logLevel = logLevel.upper()
         if not self._is_no_log():
             _logging_level = eval("logging.%s" % self.logLevel)
