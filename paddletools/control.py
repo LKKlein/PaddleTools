@@ -3,14 +3,15 @@ import sys
 
 from docopt import docopt
 
-from .checkpoints import static2dynamic, dynamic2static, torch2dynamic
-from .logger import logger
+from paddletools.checkpoints import static2dynamic, dynamic2static, torch2dynamic
+from paddletools import logger
 
 os.umask(0)
 
 DOCOPT_STRING = '''
 Usage:
-    {command} param (to_dynamic | to_static | from_torch) --src=<source_param> --dst=<destination_param> [--verbose]
+    {command} param (to_dynamic | to_static | from_torch) --src=<source_param> \
+        --dst=<destination_param> [--verbose]
 
 Arguments:
     param                    paddle parameters operations.
