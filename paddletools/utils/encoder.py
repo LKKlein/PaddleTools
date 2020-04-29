@@ -1,6 +1,6 @@
 import six
 
-from .config import type2id
+from ..config import type2id
 
 
 def _VarintEncoder():
@@ -22,9 +22,7 @@ _EncodeVarint = _VarintEncoder()
 
 
 def _VarintBytes(value):
-    """Encode the given integer as a varint and return the bytes.  This is only
-    called at startup time so it doesn't need to be fast."""
-
+    """Encode the given integer as a varint and return the bytes"""
     pieces = []
     _EncodeVarint(pieces.append, value, True)
     return pieces

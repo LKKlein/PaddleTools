@@ -1,6 +1,6 @@
 import six
 
-from .config import id2type
+from ..config import id2type
 
 
 def _VarintDecoder(mask, result_type):

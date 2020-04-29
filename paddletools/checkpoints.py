@@ -4,11 +4,12 @@ import struct
 import numpy as np
 import paddle.fluid as fluid
 import torch
+from paddletools import logger
+from paddletools.config import short2size, type2short
+from paddletools.utils.decoder import _decode_buf
+from paddletools.utils.encoder import _encode_tensor_desc
 
-from .config import short2size, type2short
-from .decoder import _decode_buf
-from .encoder import _encode_tensor_desc
-from .logger import logger
+__all__ = ["static2dynamic", "dynamic2static", "torch2dynamic"]
 
 place = fluid.CPUPlace()
 
