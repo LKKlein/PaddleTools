@@ -29,3 +29,10 @@ short2size = {
     "f": 4,
     "d": 8
 }
+
+email_stmp_server = {
+    "qq.com": {"server": "smtp.qq.com", "port": 465, "use_ssl": True},
+    "163.com": {"server": "smtp.163.com", "port": 25, "use_ssl": False},
+    "gmail.com": {"server": "smtp.gmail.com", "port": 465, "use_ssl": True},
+    "126.com": {"server": "smtp.126.com", "port": 25, "use_ssl": False}
+}

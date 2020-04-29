@@ -14,8 +14,8 @@ Paddle动态图是不是很方便？是不是很好用？嗯？可是官方预�
   - [x] 提供日志Logger，统一输出标准，同时支持日志输出到文件，方便在AIStudio使用
 
 - 进度提醒系列
-  - [ ] 添加微信消息提醒(Server酱)
-  - [ ] 添加邮件消息提醒
+  - [x] 添加微信消息提醒(Server酱)
+  - [x] 添加邮件消息提醒
 
 
 ## 安装
@@ -36,6 +36,13 @@ python3 setup.py install
 ```
 
 ## 使用
+
+功能列表:  
+- [参数转换](#参数转换)
+- [日志输出](#日志输出)
+- [消息提醒](#消息提醒)
+
+### 参数转换
 
 **请注意：**  
 **1. 我们在搭建动态网络时，请将参数命名(ParamAttr)与静态图保持一致，这样才能正确读取参数！！！**  
@@ -105,6 +112,68 @@ torch2dynamic(param_file="yolov3_pretrain.pth", save_path="yolov3")
 model_state_dict = torch2dynamic(param_file="yolov3_pretrain.pth")
 ```
 
+### 日志输出
+
+`PaddleTools`提供了封装好的彩色日志输出，无需再对`logger`做进一步的配置。用过`logging`的同学应该会比较熟悉。
+
+
+```python
+from paddletools import logger
+
+# 五种标准输出，默认输出级别是info
+logger.debug("test")
+logger.info("test")
+logger.warning("test")
+logger.error("test")
+logger.critical("test")
+
+# 新增的两种输出级别，级别在info纸上，warning之下，用于训练和验证
+logger.train("test")
+logger.eval("test")
+```
+
+输出界面长这样：  
+
+![](http://img.lkklein.xyz/logger_output.png)
+
+**另外，logger在显示输出的同时，还支持将输出保存到文件，方便之后查看日志。这一点对AIStudio用户来说非常重要！！！**  
+只需要在程序入口设置添加下面这一行就可以了。
+
+```python
+from paddletools import logger
+
+# filename是需要存储日志的文件地址，including_all表示是否将引用的其他包的输出也存储到文件，默认为全部存储
+logger.log_to_file(filename="path/to/logfile", including_all=True)
+```
+
+### 消息提醒
+
+目前提供微信和邮件两种消息提醒方式。消息提醒可以用于推送模型训练的进度，也可以用于程序异常的警告。
+
+- 微信消息推送
+
+微信消息使用[`Server酱`](http://sc.ftqq.com/3.version)进行推送，使用方式也非常简单，只需要使用GitHub账号登录，然后使用微信扫码绑定即可获取一个`secret`，具体见[官网](http://sc.ftqq.com/3.version)。获取`secret`之后即可开始使用。  
+**不过，请注意，每人每天发送上限500条，相同内容5分钟内不能重复发送，不同内容一分钟只能发送30条。请注意控制推送的数量！！！**
+
+```python
+from paddletools.reminder.wechat import WeChatReminder
+
+reminder = WeChatReminder("your-secret")
+reminder.send(title="我是标题", content="我是正文")
+```
+
+- 邮件消息推送
+
+邮件目前支持`163邮箱`、`126邮箱`、`QQ邮箱`、`Gmail邮箱`四种，后续会慢慢进行扩展的。在使用邮件发送消息之前，请先确认发送邮件的邮箱已经开启了`SMTP服务`，具体开启方式请自行百度，关键词可参考`163邮箱开启SMTP`。
+
+```python
+from paddletools.reminder.email import EmailReminder
+
+# 这里需提供发送邮件的邮箱，接收邮件的邮箱，以及发送邮件的邮箱密码
+# 部分邮箱的密码为开启SMTP服务时给的授权码，而不是登录密码，如163、QQ，请注意区分
+reminder = EmailReminder(send_mail="xxx#163.com", receive_mail="xxx@qq.com", password="xxxxx")
+reminder.send(title="我是标题", content="我是正文")
+```
 
 ## 测试
 
