@@ -5,10 +5,17 @@ Paddle动态图是不是很方便？是不是很好用？嗯？可是官方预�
 
 ## 工具列表
 
-- [x] `PaddlePaddle`静态图参数转动态图参数
-- [x] `PaddlePaddle`动态图参数转静态图参数
-- [x] `Pytorch`参数转`PaddlePaddle`动态图参数
+- 参数系列
+  - [x] `PaddlePaddle`静态图参数转动态图参数
+  - [x] `PaddlePaddle`动态图参数转静态图参数
+  - [x] `Pytorch`参数转`PaddlePaddle`动态图参数
+  
+- 日志系列
+  - [x] 提供日志Logger，统一输出标准，同时支持日志输出到文件，方便在AIStudio使用
 
+- 进度提醒系列
+  - [] 添加微信消息提醒(Server酱)
+  - [] 添加邮件消息提醒
 
 
 ## 安装

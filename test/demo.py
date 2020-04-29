@@ -3,11 +3,12 @@ import warnings
 
 import numpy as np
 import paddle.fluid as fluid
-import logging
 from paddle.fluid.dygraph import Conv2D, BatchNorm, Linear
+from paddletools.logger import logger
 from paddletools.checkpoints import static2dynamic, dynamic2static
 
 place = fluid.CPUPlace()
+logger.log_to_file("test.log")
 warnings.filterwarnings(action="ignore")
 
 
@@ -46,7 +47,7 @@ def build_static_network(save_params=False, load_pretrain=None):
 
     d = {"img": reader()}
     result = exe.run(eval_prog, feed=d, fetch_list=[logits.name])
-    logging.info(result[0])
+    logger.info(result[0])
     if save_params:
         if not os.path.exists("params"):
             os.mkdir("params")
@@ -88,22 +89,22 @@ def build_dynamic_network(load_params=None, save_params=False):
         model.eval()
         d = fluid.dygraph.to_variable(reader())
         p = model(d)
-        logging.info(p.numpy())
+        logger.info(p.numpy())
         if save_params:
             fluid.save_dygraph(model.state_dict(), "dynamic_params")
 
 
 if __name__ == "__main__":
-    logging.info(">>> build satic network & save params...")
+    logger.info(">>> build satic network & save params...")
     build_static_network(save_params=True)
-    logging.info(">>> read static params & build dynamic network...")
+    logger.info(">>> read static params & build dynamic network...")
     static2dynamic("params", "dynamic")
     build_dynamic_network(load_params="dynamic")
 
     print("\n<========================>\n")
 
-    logging.info(">>> build dynamic network & save params...")
+    logger.info(">>> build dynamic network & save params...")
     build_dynamic_network(save_params=True)
-    logging.info(">>> read dynamic params & build static network...")
+    logger.info(">>> read dynamic params & build static network...")
     dynamic2static("dynamic_params", "static_params")
     build_static_network(load_pretrain="static_params")

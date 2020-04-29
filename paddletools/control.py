@@ -1,10 +1,10 @@
-import logging
 import os
 import sys
 
 from docopt import docopt
 
 from .checkpoints import static2dynamic, dynamic2static, torch2dynamic
+from .logger import logger
 
 os.umask(0)
 
@@ -24,14 +24,12 @@ Example:
     pdtools param to_dynamic -s yolov3_pretrain/ -d yolov3 -v
 '''.format(command=sys.argv[0])
 cmd_args = docopt(DOCOPT_STRING, version='v1')
-logger = logging.getLogger("pdtools")
-logger.setLevel(logging.INFO)
 
 
 def main():
     if cmd_args["param"]:
         if cmd_args["--verbose"]:
-            logger.setLevel(logging.DEBUG)
+            logger.setLevel("DEBUG")
         if cmd_args["to_dynamic"]:
             if not os.path.exists(cmd_args["--src"]):
                 raise Exception("source path: {} not exists!".format(cmd_args["--src"]))

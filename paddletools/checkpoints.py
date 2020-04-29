@@ -1,4 +1,3 @@
-import logging
 import os
 import struct
 
@@ -9,10 +8,9 @@ import torch
 from .config import short2size, type2short
 from .decoder import _decode_buf
 from .encoder import _encode_tensor_desc
+from .logger import logger
 
 place = fluid.CPUPlace()
-logger = logging.getLogger("pdtools")
-logger.setLevel(logging.INFO)
 
 
 def _read_torch_dict(param_file):
