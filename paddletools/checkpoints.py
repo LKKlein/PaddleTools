@@ -3,7 +3,6 @@ import struct
 
 import numpy as np
 import paddle.fluid as fluid
-import torch
 from paddletools import logger
 from paddletools.config import short2size, type2short
 from paddletools.utils.decoder import _decode_buf
@@ -15,6 +14,7 @@ place = fluid.CPUPlace()
 
 
 def _read_torch_dict(param_file):
+    import torch
     model_state_dict = torch.load(param_file)
     state_dict = {}
     if "network" in model_state_dict:
