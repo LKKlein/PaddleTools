@@ -78,7 +78,7 @@ class Logger(object):
         return self.logLevel
 
     def __call__(self, level, msg):
-        def _get_log_arr(msg, len_limit=30):
+        def _get_log_arr(msg, len_limit=150):
             ph = Logger.PLACEHOLDER
             lrspace = 2
             lc = rc = " " * lrspace
