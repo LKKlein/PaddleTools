@@ -21,21 +21,24 @@ class Logger(object):
 
     def __init__(self, name="PaddleTools", level="INFO"):
         self.logger = logging.getLogger(name)
+        self.handlers = []
+        self.log_colors = {
+            'DEBUG': 'purple',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'bold_red',
+            'TRAIN': 'cyan',
+            'EVAL': 'blue',
+        }
         self.handler = logging.StreamHandler()
 
         self.format = colorlog.ColoredFormatter(
             '%(log_color)s[%(asctime)-15s] [%(levelname)8s] - %(message)s',
-            log_colors={
-                'DEBUG': 'purple',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-                'TRAIN': 'cyan',
-                'EVAL': 'blue',
-            })
+            log_colors=self.log_colors)
         self.handler.setFormatter(self.format)
         self.logger.addHandler(self.handler)
+        self.handler.append(self.handler)
         self.logLevel = level
         assert hasattr(logging, level), "logging has no level named {}".format(level)
         self.logger.setLevel(self.logLevel)
@@ -56,6 +59,7 @@ class Logger(object):
         filehandler = logging.FileHandler(filename)
         file_format = logging.Formatter('[%(asctime)-15s] [%(levelname)8s] - %(message)s')
         filehandler.setFormatter(file_format)
+        self.handlers.append(filehandler)
 
         if including_all:
             for logger_name, logger in logging.root.manager.loggerDict.items():
@@ -63,6 +67,13 @@ class Logger(object):
                     logger.addHandler(filehandler)
         else:
             self.logger.addHandler(filehandler)
+
+    def set_format(self, formats):
+        color_format = colorlog.ColoredFormatter(
+            formats, log_colors=self.log_colors
+        )
+        for handler in self.handlers:
+            handler.setFormatter(color_format)
 
     def _is_no_log(self):
         return self.getLevel() == Logger.NOLOG
