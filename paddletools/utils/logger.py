@@ -38,7 +38,7 @@ class Logger(object):
             log_colors=self.log_colors)
         self.handler.setFormatter(self.format)
         self.logger.addHandler(self.handler)
-        self.handler.append(self.handler)
+        self.handlers.append(self.handler)
         self.logLevel = level
         assert hasattr(logging, level), "logging has no level named {}".format(level)
         self.logger.setLevel(self.logLevel)
