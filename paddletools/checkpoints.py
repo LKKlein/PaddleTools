@@ -20,7 +20,22 @@ def _read_torch_dict(param_file):
     if "network" in model_state_dict:
         model_state_dict = model_state_dict["network"]
     for name, data in model_state_dict.items():
-        state_dict[name] = data.numpy()
+        # remove num_batches_tracked in bn from torch
+        if "num_batches_tracked" in name:
+            continue
+
+        # compatible for Linear layer between torch and paddle
+        # TODO: distinguish which is Linear layer
+        # TODO: find if there is any other layer that is not compatible
+        if ("fc" in name or "linear" in name) and len(data.shape) == 2:
+            value = data.numpy().transpose()
+        else:
+            value = data.numpy()
+
+        # replace default name of bn mean and var from torch to paddle
+        name = name.replace("running_mean", "_mean")
+        name = name.replace("running_var", "_variance")
+        state_dict[name] = value
     return state_dict
 
 

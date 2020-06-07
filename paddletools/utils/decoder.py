@@ -32,24 +32,12 @@ def _decode_buf(buf):
         out.append(res)
 
     dims = []
-    dim_flag = type_flag = False
     type_id = 5
-    for b in out:
-        if b == 8 and not type_flag:
-            type_flag = True
-            continue
-
-        if b == 16 and not dim_flag:
-            dim_flag = True
-            continue
-
-        if type_flag:
+    for idx, b in enumerate(out):
+        if idx == 1:
             type_id = b
-            type_flag = False
-
-        if dim_flag:
+        elif (idx - 1) % 2 == 0:
             dims.append(b)
-            dim_flag = False
     if type_id not in id2type:
         type_id = 5
     return id2type[type_id], dims
