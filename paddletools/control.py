@@ -3,7 +3,7 @@ import sys
 
 from docopt import docopt
 
-from paddletools.checkpoints import static2dynamic, dynamic2static, torch2dynamic
+from paddletools.checkpoints import static2dynamic, pdparams2static, torch2dynamic
 from paddletools import logger
 
 os.umask(0)
@@ -38,7 +38,7 @@ def main():
         if cmd_args["to_static"]:
             if not os.path.exists(cmd_args["--src"] + ".pdparams"):
                 raise Exception("source path: {}.pdparams not exists!".format(cmd_args["--src"]))
-            dynamic2static(param_file=cmd_args["--src"], filename=cmd_args["--dst"])
+            pdparams2static(param_file=cmd_args["--src"], filename=cmd_args["--dst"])
         if cmd_args["from_torch"]:
             if not os.path.exists(cmd_args["--src"]):
                 raise Exception("source path: {} not exists!".format(cmd_args["--src"]))

@@ -8,7 +8,7 @@ from paddletools.config import short2size, type2short
 from paddletools.utils.decoder import _decode_buf
 from paddletools.utils.encoder import _encode_tensor_desc
 
-__all__ = ["static2dynamic", "dynamic2static", "torch2dynamic"]
+__all__ = ["static2dynamic", "pdparams2static", "torch2dynamic"]
 
 place = fluid.CPUPlace()
 
@@ -58,13 +58,16 @@ def _read_static_params(param_file):
     return data, data_type, lod_info
 
 
-def _read_dynamic_params(param_file):
+def _read_pdparams(param_file):
     state_dict = {}
     with fluid.dygraph.guard(place):
         model_state_dict, _ = fluid.load_dygraph(param_file, keep_name_table=True)
-        name_table = model_state_dict.pop("StructuredToParameterName@@")
-        for name, data in model_state_dict.items():
-            state_dict[name_table[name]] = data
+        if "StructuredToParameterName@@" in model_state_dict:
+            name_table = model_state_dict.pop("StructuredToParameterName@@")
+            for name, data in model_state_dict.items():
+                state_dict[name_table[name]] = data
+        else:
+            state_dict.update(model_state_dict)
     return state_dict
 
 
@@ -107,13 +110,13 @@ def torch2dynamic(param_file, save_path=None):
         return dynamic_state_dict
 
 
-def dynamic2static(param_file, filename):
+def pdparams2static(param_file, filename):
     assert os.path.exists(param_file + ".pdparams"), "{}.pdparams not exists!".format(param_file)
     if not os.path.exists(filename):
         os.makedirs(filename)
     assert len(os.listdir(filename)) == 0, "dir {} should be empty!".format(filename)
-    logger.info("start to read dynamic params...")
-    static_dict = _read_dynamic_params(param_file)
+    logger.info("start to read pdparams params...")
+    static_dict = _read_pdparams(param_file)
     logger.info("found {} parameters. start to save to {}...".format(len(static_dict), filename))
     for name, data in static_dict.items():
         _make_static_output(filename, name, data)
